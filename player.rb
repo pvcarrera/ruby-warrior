@@ -1,5 +1,12 @@
 class Player
 
+  MAX_HEALTH = 20
+
+  def initialize
+    @direction = :backward
+    @full_recover = false
+  end
+
   def play_turn(warrior)
     @warrior = warrior
     if(is_free?)
@@ -11,11 +18,11 @@ class Player
   end
 
   def need_rest?
-    @warrior.health < 20
+    @warrior.health < MAX_HEALTH && !@full_recover
   end
 
   def is_free?
-    @warrior.feel.empty?
+    @warrior.feel(@direction).empty?
   end
 
   def can_rest?
@@ -23,18 +30,30 @@ class Player
   end
 
   def free_action
-    if(need_rest? && can_rest?)
+    if(need_rest?)
+      rest_action
+    else
+      @warrior.walk!(@direction)
+    end
+  end
+
+  def rest_action
+    if can_rest?
+      @full_recover = true if @warrior.health == MAX_HEALTH - 3
       @warrior.rest!
     else
-      @warrior.walk!
+      @warrior.walk!(:backward)
     end
   end
 
   def item_action
-    if(@warrior.feel.captive?)
-      @warrior.rescue!
-    else
-      @warrior.attack!
+    if(@warrior.feel(@direction).captive?)
+      @warrior.rescue!(@direction)
+    elsif(@warrior.feel(@direction).wall?)
+      @direction = :forward
+      @warrior.walk!(@direction)
+    elsif
+      @warrior.attack!(@direction)
     end
   end
 
