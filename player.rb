@@ -6,6 +6,7 @@ class Player
     else
       warrior.attack!
     end
+    @health = @warrior.health
   end
 
   def need_rest?
@@ -16,8 +17,12 @@ class Player
     @warrior.feel.empty?
   end
 
+  def can_rest?
+    @warrior.health >= @health
+  end
+
   def free_action
-    if(need_rest?)
+    if(need_rest? && can_rest?)
       @warrior.rest!
     else
       @warrior.walk!
