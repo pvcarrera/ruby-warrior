@@ -39,7 +39,7 @@ class Player
 
   def rest_action
     if can_rest?
-      @full_recover = true if @warrior.health == MAX_HEALTH - 3
+      @full_recover = true if @warrior.health == MAX_HEALTH - 2
       @warrior.rest!
     else
       @warrior.walk!(:backward)
@@ -47,13 +47,20 @@ class Player
   end
 
   def item_action
-    if(@warrior.feel(@direction).captive?)
+    case
+    when @warrior.feel(@direction).captive? then
       @warrior.rescue!(@direction)
-    elsif(@warrior.feel(@direction).wall?)
+
+    when @warrior.feel(@direction).wall? then
       @direction = :forward
       @warrior.walk!(@direction)
-    elsif
-      @warrior.attack!(@direction)
+
+    else
+      if @direction == :backward
+        @warrior.pivot!
+      else
+        @warrior.attack!(@direction)
+      end
     end
   end
 
