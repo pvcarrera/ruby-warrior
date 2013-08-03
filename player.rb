@@ -1,10 +1,11 @@
 class Player
+
   def play_turn(warrior)
     @warrior = warrior
     if(is_free?)
       free_action
     else
-      warrior.attack!
+      item_action
     end
     @health = @warrior.health
   end
@@ -26,6 +27,14 @@ class Player
       @warrior.rest!
     else
       @warrior.walk!
+    end
+  end
+
+  def item_action
+    if(@warrior.feel.captive?)
+      @warrior.rescue!
+    else
+      @warrior.attack!
     end
   end
 
